@@ -60,16 +60,17 @@ export default {
 
     async getAlertLog() {
       try {
-        let res = await axios.get('/api/metadata/elastalert?noagg=1');
-        if (res.data.error) {
+        let res = await axios.get('/api/monitor/meta/alerts?noagg=1');
+        const { data, error } = res.data;
+        if (error) {
           this.$notify.error({
-            message: res.data.error.msg,
+            message: error,
             title: 'Elasticsearch error',
             duration: 0
           });
-          logger().error({ error: res.data.error });
+          logger().error({ error });
         } else {
-          this.alertLog = res.data.hits;
+          this.alertLog = data;
         }
       } catch (error) {
         networkError(error);

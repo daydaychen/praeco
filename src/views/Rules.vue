@@ -7,11 +7,6 @@
       Add rule
     </el-button>
 
-    <el-button type="info" plain @click="addFolder">
-      <Icon icon="folder" transform="left-4" />
-      Add folder
-    </el-button>
-
     <el-table :data="rules" class="m-n-sm" style="width: 100%">
       <el-table-column label="Rules">
         <template #default="scope">
@@ -34,26 +29,6 @@ export default {
         .map(val => ({
           val
         }));
-    }
-  },
-
-  methods: {
-    addFolder() {
-      this.$prompt('Name', 'Add folder', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel'
-      })
-        .then(async ({ value }) => {
-          await this.$store.dispatch('configs/createFolder', {
-            path: value,
-            type: 'rules'
-          });
-          this.$router.push({
-            path: `/folders/rules/${value}`,
-            query: { refreshTree: true }
-          });
-        })
-        .catch(() => {});
     }
   }
 };

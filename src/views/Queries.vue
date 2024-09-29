@@ -50,16 +50,17 @@ export default {
 
     async getQueryLog() {
       try {
-        let res = await axios.get('/api/metadata/elastalert_status');
-        if (res.data.error) {
+        let res = await axios.get('/api/monitor/meta/status');
+        const { data, error } = res.data;
+        if (error) {
           this.$notify.error({
-            message: res.data.error.msg,
+            message: error,
             title: 'Elasticsearch error',
             duration: 0
           });
-          logger().error({ error: res.data.error });
+          logger().error({ error });
         } else {
-          this.queryLog = res.data.hits;
+          this.queryLog = data;
         }
       } catch (error) {
         networkError(error);

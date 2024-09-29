@@ -99,7 +99,9 @@ export default {
           commit('query/UPDATE_TYPE', 'tree');
         } else {
           try {
-            commit('query/UPDATE_MANUAL', config.filter[0].query.query_string.query);
+            if (config.filter.length > 0) {
+              commit('query/UPDATE_MANUAL', config.filter[0].query.query_string.query);
+            }
           } catch (error) {
             console.error(error);
           }
@@ -1205,7 +1207,7 @@ export default {
       commit('UPDATE_VALIDATING', true);
 
       try {
-        let res = await axios.post('/api/test', {
+        let res = await axios.post('/api/monitor/test', {
           rule: getters.yaml(true),
           options: {
             testType: 'schemaOnly',
@@ -1233,18 +1235,21 @@ export default {
     async sample({ commit, getters, state }) {
       commit('CLEAR_SAMPLE');
 
-      let search = {
+      let data = {
+        index_name: getters['settings/wildcardIndex'],
         query: {
-          bool: {
-            must: [
-              {
-                query_string: { query: getters['query/queryString'] || `${state.settings.timeField}:*` }
-              }
-            ]
-          }
-        },
-        sort: [{ [state.settings.timeField]: { order: 'desc' } }],
-        size: 1
+          query: {
+            bool: {
+              must: [
+                {
+                  query_string: { query: getters['query/queryString'] || `${state.settings.timeField}:*` }
+                }
+              ]
+            }
+          },
+          sort: [{ [state.settings.timeField]: { order: 'desc' } }],
+          size: 1
+        }
       };
 
       if (sampleCancelToken) {
@@ -1255,7 +1260,7 @@ export default {
 
       try {
         sampleCancelToken = axios.CancelToken.source();
-        res = await axios.post(`/api/search/${getters['settings/wildcardIndex']}`, search, {
+        res = await axios.post('/api//monitor/es/search', data, {
           cancelToken: sampleCancelToken.token
         });
       } catch (error) {

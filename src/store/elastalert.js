@@ -20,8 +20,8 @@ export default {
   actions: {
     async fetchConfig({ commit }) {
       try {
-        let res = await axios.get('/api/config');
-        commit('FETCHED_CONFIG', res.data);
+        let res = await axios.get('/api/monitor/config');
+        commit('FETCHED_CONFIG', res.data.data);
       } catch (error) {
         networkError(error);
       }

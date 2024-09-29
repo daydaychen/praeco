@@ -43,7 +43,7 @@ export default {
     },
 
     /*eslint-disable */
-    FETCHED_CONFIG(state, { path, config, type, isYaml = true }) {
+    FETCHED_CONFIG(state, { path, config, type, isYaml = false }) {
       /* eslint-enable */
       try {
         let conf = isYaml ? yaml.load(config, 'utf8') : config;
@@ -88,11 +88,11 @@ export default {
   actions: {
     async fetchConfig({ commit }, { path, type }) {
       try {
-        let res = await axios.get(`/api/${type}/${path}`);
+        let res = await axios.get(`/api/monitor/${type}/${path}`);
         // We have got the config, so save it to our store keyed on its path
-        let ruleYaml = typeof res.data === 'object' ? res.data.yaml : res.data;
+        let ruleYaml = res.data.data;
         commit('FETCHED_CONFIG', { path, config: ruleYaml, type });
-        return res.data;
+        return res.data.data;
       } catch (error) {
         networkError(error);
       }
@@ -224,7 +224,7 @@ export default {
       try {
         // Before creating the config at this path, we check to make sure
         // it doesn't already exist
-        let res = await axios.get(`/api/${type}/${path}`);
+        let res = await axios.get(`/api/monitor/${type}/${path}`);
         if (res.data) {
           return { error: 'A rule by that name already exists at that path' };
         }
@@ -237,7 +237,7 @@ export default {
 
     async createConfigFinal({ commit, state }, { type, path, conf }) {
       try {
-        let res = await axios.post(`/api/${type}/${path}`, {
+        let res = await axios.post(`/api/monitor/${type}/${path}`, {
           yaml: yaml.dump(conf, { quotingType: '"', forceQuotes: true })
         });
 
@@ -260,7 +260,7 @@ export default {
 
     async deleteConfig({ commit }, { path, type }) {
       try {
-        let res = await axios.delete(`/api/${type}/${path}`);
+        let res = await axios.delete(`/api/monitor/${type}/${path}`);
 
         if (res.status === 200) {
           commit('DELETED_CONFIG', { path, type });
@@ -271,27 +271,9 @@ export default {
       }
     },
 
-    async createFolder(context, { path, type }) {
-      try {
-        let res = await axios.put(`/api/folders/${type}/${path}`);
-        return res.data;
-      } catch (error) {
-        networkError(error);
-      }
-    },
-
-    async deleteFolder(context, { path, type }) {
-      try {
-        let res = await axios.delete(`/api/folders/${type}/${path}`);
-        return res.data;
-      } catch (error) {
-        networkError(error);
-      }
-    },
-
     async silenceRule(context, { path, unit, duration }) {
       try {
-        let res = await axios.post(`/api/silence/${path}`, {
+        let res = await axios.post(`/api/monitor/silence/${path}`, {
           unit,
           duration
         });
@@ -310,7 +292,7 @@ export default {
       conf.is_enabled = false;
 
       try {
-        let res = await axios.post(`/api/rules/${conf.__praeco_full_path}`, {
+        let res = await axios.post(`/api/monitor/rules/${conf.__praeco_full_path}`, {
           yaml: yaml.dump(conf, { quotingType: '"', forceQuotes: true })
         });
 
@@ -333,7 +315,7 @@ export default {
       conf.is_enabled = true;
 
       try {
-        let res = await axios.post(`/api/rules/${conf.__praeco_full_path}`, {
+        let res = await axios.post(`/api/monitor/rules/${conf.__praeco_full_path}`, {
           yaml: yaml.dump(conf, { quotingType: '"', forceQuotes: true })
         });
 

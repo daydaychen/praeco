@@ -544,18 +544,19 @@ export default {
     //
     async getQueryLog() {
       try {
-        let res = await axios.get('/api/metadata/elastalert_status', {
+        let res = await axios.get('/api/monitor/meta/status', {
           params: { rule_name: this.name }
         });
-        if (res.data.error) {
+        const { data, error } = res.data;
+        if (error) {
           this.$notify.error({
-            message: res.data.error.msg,
+            message: error,
             title: 'Elasticsearch error',
             duration: 0
           });
-          logger().error({ error: res.data.error });
+          logger().error({ error });
         } else {
-          this.queryLog = res.data.hits;
+          this.queryLog = data;
         }
       } catch (error) {
         networkError(error);
@@ -567,18 +568,19 @@ export default {
     //
     async getAlertLog() {
       try {
-        let res = await axios.get('/api/metadata/elastalert', {
+        let res = await axios.get('/api/monitor/meta/alerts', {
           params: { rule_name: this.name }
         });
-        if (res.data.error) {
+        const { data, error } = res.data;
+        if (error) {
           this.$notify.error({
-            message: res.data.error.msg,
+            message: error,
             title: 'Elasticsearch error',
             duration: 0
           });
-          logger().error({ error: res.data.error });
+          logger().error({ error });
         } else {
-          this.alertLog = res.data.hits;
+          this.alertLog = data;
         }
       } catch (error) {
         networkError(error);
@@ -590,18 +592,19 @@ export default {
     //
     async getSilenceLog() {
       try {
-        let res = await axios.get('/api/metadata/silence', {
+        let res = await axios.get('/api/monitor/meta/silences', {
           params: { rule_name: this.name }
         });
-        if (res.data.error) {
+        const { data, error } = res.data;
+        if (error) {
           this.$notify.error({
-            message: res.data.error.msg,
+            message: error,
             title: 'Elasticsearch error',
             duration: 0
           });
-          logger().error({ error: res.data.error });
+          logger().error({ error });
         } else {
-          this.silenceLog = res.data.hits;
+          this.silenceLog = data;
         }
       } catch (error) {
         networkError(error);

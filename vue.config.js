@@ -3,6 +3,10 @@ const webpack = require('webpack');
 module.exports = {
   publicPath: process.env.VUE_APP_BASE_URL ? process.env.VUE_APP_BASE_URL : '/',
   configureWebpack: {
+    cache: {
+      type: 'filesystem',
+      allowCollectingMemory: true
+    },
     devtool: process.env.NODE_ENV === 'coverage' ? 'eval' : undefined,
     performance: {
       hints: false
@@ -43,7 +47,7 @@ module.exports = {
         }
       },
       '/api-ws/test': {
-        target: 'http://localhost:3333/',
+        target: 'http://127.0.0.1:10100',
         ws: true,
         changeOrigin: true,
         pathRewrite: {
@@ -51,7 +55,7 @@ module.exports = {
         }
       },
       '/api': {
-        target: 'http://localhost:3030/',
+        target: 'http://127.0.0.1:10100',
         changeOrigin: true,
         pathRewrite: {
           '^/api': ''

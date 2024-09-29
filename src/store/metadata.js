@@ -234,11 +234,12 @@ export default {
       }
 
       try {
-        let res = await axios.get('/api/indices');
-        if (res.data.error) {
+        let res = await axios.get('/api/monitor/es/indices');
+        const { data, error } = res.data;
+        if (error) {
           networkError('Error fetching indices.');
         } else {
-          commit('FETCHED_INDICES', res.data);
+          commit('FETCHED_INDICES', data);
           return true;
         }
       } catch (error) {
@@ -252,8 +253,8 @@ export default {
       }
 
       try {
-        let res = await axios.get(`/api/mapping/${index}`);
-        commit('FETCHED_MAPPINGS', { mappings: res.data, index });
+        let res = await axios.get('/api/monitor/es/mappings', { params: { index_name: index } });
+        commit('FETCHED_MAPPINGS', { mappings: res.data.data, index });
         return true;
       } catch (error) {
         return false;

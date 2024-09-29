@@ -10,7 +10,6 @@
           </el-col>
           <el-col :span="12" align="right">
             <p>
-              <UpdateIndicator />
               <el-tag type="info" class="m-w-xs">
                 elastalert status: {{ $store.state.server.status || '?' }}
               </el-tag>
@@ -32,13 +31,7 @@
 </template>
 
 <script>
-import UpdateIndicator from '@/components/UpdateIndicator';
-
 export default {
-  components: {
-    UpdateIndicator
-  },
-
   computed: {
     sidebarWidth: {
       get() {
@@ -51,7 +44,6 @@ export default {
   },
 
   mounted() {
-    this.$store.dispatch('server/fetchVersion');
     this.$store.dispatch('server/fetchStatus');
     this.$store.dispatch('elastalert/fetchConfig');
   },

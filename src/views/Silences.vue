@@ -52,16 +52,17 @@ export default {
 
     async getSilenceLog() {
       try {
-        let res = await axios.get('/api/metadata/silence');
-        if (res.data.error) {
+        let res = await axios.get('/api/monitor/meta/silences');
+        const { data, error } = res.data;
+        if (error) {
           this.$notify.error({
-            message: res.data.error.msg,
+            message: error,
             title: 'Elasticsearch error',
             duration: 0
           });
-          logger().error({ error: res.data.error });
+          logger().error({ error });
         } else {
-          this.silenceLog = res.data.hits;
+          this.silenceLog = data;
         }
       } catch (error) {
         networkError(error);

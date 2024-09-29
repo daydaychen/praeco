@@ -4,7 +4,6 @@ import Home from './views/Home.vue';
 import Errors from './views/Errors.vue';
 import Silences from './views/Silences.vue';
 import Queries from './views/Queries.vue';
-import Folder from './views/Folder.vue';
 import Templates from './views/Templates.vue';
 import Rules from './views/Rules.vue';
 import RuleView from './views/RuleView.vue';
@@ -46,12 +45,6 @@ export default new Router({
       path: '/rules',
       name: 'rules',
       component: Rules
-    },
-    {
-      path: '/folders/:type/:path*',
-      name: 'folder',
-      component: Folder,
-      props: route => ({ ...route.params, ...route.query })
     },
     {
       path: '/rule/add/:path?',

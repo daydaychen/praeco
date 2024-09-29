@@ -29,13 +29,13 @@ export async function loadChildrenOptions({ action, parentNode, callback }, only
   if (action === 'LOAD_CHILDREN_OPTIONS') {
     if (parentNode.id === '_rules') {
       // Load root rules folder
-      let res = await axios.get('/api/rules?all');
-      store.commit('configs/FETCHED_CONFIGS_TREE', { paths: res.data, type: 'rules' });
+      let res = await axios.post('/api/monitor/rules/list', {});
+      store.commit('configs/FETCHED_CONFIGS_TREE', { paths: res.data.data, type: 'rules' });
 
       let folderNodes = {};
       let ruleNodes = {};
 
-      store.state.configs.tree.rules.sort().forEach(entry => {
+      store.state.configs.tree.rules.sort().forEach(({ name: entry }) => {
         let entryParts = entry.split('/');
         let entryName = entryParts[0];
 
@@ -56,20 +56,20 @@ export async function loadChildrenOptions({ action, parentNode, callback }, only
         }
       });
 
-      let paths = store.state.configs.tree.rules.filter(entry => !entry.endsWith('/'));
+      let paths = store.state.configs.tree.rules.filter(({ name: entry }) => !entry.endsWith('/')).map(({ name }) => name);
       store.commit('configs/FETCHED_CONFIGS', { paths, type: 'rules' });
 
       parentNode.children = [...Object.values(folderNodes).sort(), ...Object.values(ruleNodes).sort()];
     } else if (parentNode.id === '_templates') {
       if (parentNode.id === '_templates') {
         // Load root templates folder
-        let res = await axios.get('/api/templates?all');
-        store.commit('configs/FETCHED_CONFIGS_TREE', { paths: res.data, type: 'templates' });
+        let res = await axios.post('/api/monitor/template/list', {});
+        store.commit('configs/FETCHED_CONFIGS_TREE', { paths: res.data.data, type: 'templates' });
 
         let folderNodes = {};
         let templateNodes = {};
 
-        store.state.configs.tree.templates.sort().forEach(entry => {
+        store.state.configs.tree.templates.sort().forEach(({ name: entry }) => {
           let entryParts = entry.split('/');
           let entryName = entryParts[0];
 
@@ -90,7 +90,7 @@ export async function loadChildrenOptions({ action, parentNode, callback }, only
           }
         });
 
-        let paths = store.state.configs.tree.templates.filter(entry => !entry.endsWith('/'));
+        let paths = store.state.configs.tree.templates.filter(({ name: entry }) => !entry.endsWith('/')).map(({ name }) => name);
         store.commit('configs/FETCHED_CONFIGS', { paths, type: 'templates' });
 
         parentNode.children = [...Object.values(folderNodes).sort(), ...Object.values(templateNodes).sort()];

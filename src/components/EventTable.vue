@@ -210,27 +210,30 @@ export default {
 
       this.eventsLoading = true;
 
-      let query = {
+      let data = {
+        index_name: formatIndex(this.$store.state.config.settings.index),
         query: {
-          bool: {
-            must: [
-              {
-                query_string: {
-                  query:
-                    this.$store.getters['config/query/queryString']
-                    || `${this.timeField}:*`
+          query: {
+            bool: {
+              must: [
+                {
+                  query_string: {
+                    query:
+                      this.$store.getters['config/query/queryString']
+                      || `${this.timeField}:*`
+                  }
                 }
-              }
-            ]
-          }
-        },
-        sort: [{ [this.timeField]: { order: 'desc' } }],
-        from: this.offset,
-        size: 40
+              ]
+            }
+          },
+          sort: [{ [this.timeField]: { order: 'desc' } }],
+          from: this.offset,
+          size: 40
+        }
       };
 
       if (this.groupByField && this.groupByValue) {
-        query.query.bool.must.push({
+        data.query.query.bool.must.push({
           query_string: {
             query: `${this.groupByField}:"${this.groupByValue}"`
           }
@@ -248,7 +251,7 @@ export default {
           to = this.from + Math.trunc(msFromTimeframe(this.timeframe) / 1000);
         }
 
-        query.query.bool.must.push({
+        data.query.query.bool.must.push({
           range: {
             [this.timeField]: {
               gte: this.from,
@@ -268,8 +271,8 @@ export default {
       try {
         this.source = CancelToken.source();
         res = await axios.post(
-          `/api/search/${formatIndex(this.$store.state.config.settings.index)}`,
-          query,
+          '/api/monitor/es/search',
+          data,
           { cancelToken: this.source.token }
         );
       } catch (error) {
@@ -280,8 +283,8 @@ export default {
         this.source = null;
       }
 
-      if (res && res.data && res.data.hits) {
-        res.data.hits.hits
+      if (res && res.data.data && res.data.data.hits) {
+        res.data.data.hits.hits
           .map(h => h._source)
           .forEach(event => {
             this.loadedEvents.push(event);

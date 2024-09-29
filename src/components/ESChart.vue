@@ -578,8 +578,8 @@ export default {
           spikeVal = preVal / val;
         }
 
-        return `${momentDate.format('M/D/YYYY h:mm:ssa')} <br> 
-              ${options.data.value} Events - Spike ${spike > 1 ? 'up' : 'down'} 
+        return `${momentDate.format('M/D/YYYY h:mm:ssa')} <br>
+              ${options.data.value} Events - Spike ${spike > 1 ? 'up' : 'down'}
               ${spikeVal.toFixed(1)}`;
       });
     },
@@ -643,26 +643,29 @@ export default {
           .unix();
       }
 
-      let query = {
+      let data = {
+        index_name: formatIndex(this.index),
         query: {
-          bool: {
-            must: [
-              {
-                query_string: { query: this.query }
-              },
-              {
-                range: {
-                  [this.timeField]: {
-                    lte,
-                    gte
+          query: {
+            bool: {
+              must: [
+                {
+                  query_string: { query: this.query }
+                },
+                {
+                  range: {
+                    [this.timeField]: {
+                      lte,
+                      gte
+                    }
                   }
                 }
-              }
-            ]
-          }
-        },
-        size: 0,
-        aggs: this.aggs
+              ]
+            }
+          },
+          size: 0,
+          aggs: this.aggs
+        }
       };
 
       this.loading = true;
@@ -677,9 +680,10 @@ export default {
 
       try {
         this.source = CancelToken.source();
-        res = await axios.post(`/api/search/${formatIndex(this.index)}`, query, {
+        res = await axios.post('/api/monitor/es/search', data, {
           cancelToken: this.source.token
         });
+        res.data = res.data.data;
       } catch (error) {
         if (!axios.isCancel(error)) {
           console.error(error);

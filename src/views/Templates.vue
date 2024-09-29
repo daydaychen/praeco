@@ -7,11 +7,6 @@
       Add template
     </el-button>
 
-    <el-button type="info" plain @click="addFolder">
-      <Icon icon="folder" transform="left-4" />
-      Add folder
-    </el-button>
-
     <el-table :data="templates" class="m-n-sm" style="width: 100%">
       <el-table-column label="Templates">
         <template #default="scope">
@@ -34,26 +29,6 @@ export default {
         .map(val => ({
           val
         }));
-    }
-  },
-
-  methods: {
-    addFolder() {
-      this.$prompt('Name', 'Add folder', {
-        confirmButtonText: 'OK',
-        cancelButtonText: 'Cancel'
-      })
-        .then(async ({ value }) => {
-          await this.$store.dispatch('configs/createFolder', {
-            path: value,
-            type: 'templates'
-          });
-          this.$router.push({
-            path: `/folders/templates/${value}`,
-            query: { refreshTree: true }
-          });
-        })
-        .catch(() => {});
     }
   }
 };
